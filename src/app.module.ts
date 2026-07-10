@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+import { RequestIdMiddleware } from './common/middlewares/request-id.middleware';
 
 @Module({
   imports: [
