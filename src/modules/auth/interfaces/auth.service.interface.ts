@@ -21,7 +21,6 @@ export const IAuthService = Symbol('IAuthService');
 export interface IAuthService {
   register(dto: RegisterDto): Promise<{ user: AuthUser }>;
   login(dto: LoginDto): Promise<{ user: AuthUser; tokens: AuthTokens }>;
-  me(userId: string): Promise<AuthUser>;
   rotate(dto: RefreshTokenDto): Promise<AuthTokens>;
   logout(dto: RefreshTokenDto): Promise<void>;
 }

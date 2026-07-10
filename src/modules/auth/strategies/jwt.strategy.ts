@@ -34,7 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // 3. Kembalikan RequestUser, lupakan AuthUser
   async validate(payload: JwtPayload): Promise<RequestUser> {
     const user = await this.authRepository.findById(payload.sub);
 

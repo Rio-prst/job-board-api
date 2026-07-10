@@ -31,9 +31,7 @@ export class AuthService implements IAuthService {
     this.jwtSecret = jwtSecret;
   }
 
-  async register(
-    dto: RegisterDto,
-  ): Promise<{ user: AuthUser; tokens: AuthTokens }> {
+  async register(dto: RegisterDto): Promise<{ user: AuthUser }> {
     const existing = await this.authRepository.findByEmail(dto.email);
     if (existing) {
       throw new ConflictException({
@@ -47,12 +45,10 @@ export class AuthService implements IAuthService {
       email: dto.email,
       passwordHash,
       name: dto.name,
-      role: dto.role, // [KRUSIAL] Tambahkan role dari dto ke sini
+      role: dto.role,
     });
 
-    const tokens = await this.generateTokens(user.id, user.email);
-
-    return { user, tokens };
+    return { user };
   }
 
   async login(dto: LoginDto): Promise<{ user: AuthUser; tokens: AuthTokens }> {
@@ -84,17 +80,6 @@ export class AuthService implements IAuthService {
     const tokens = await this.generateTokens(user.id, user.email);
 
     return { user, tokens };
-  }
-
-  async me(userId: string): Promise<AuthUser> {
-    const user = await this.authRepository.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException({
-        code: 'auth.unauthorized',
-        message: 'User not found',
-      });
-    }
-    return user;
   }
 
   async rotate(dto: RefreshTokenDto): Promise<AuthTokens> {
