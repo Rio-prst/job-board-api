@@ -4,4 +4,10 @@
 -- @param {String} $4:role
 INSERT INTO users (email, password, name, role) 
 VALUES ($1, $2, $3, CAST($4 AS "Role")) 
-RETURNING id, email, name, role, created_at AS "createdAt";
+RETURNING 
+  id, 
+  email,
+  name,
+  role,
+  created_at AS "createdAt",
+  updated_at AS "updatedAt";

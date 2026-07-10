@@ -4,7 +4,8 @@ SELECT
   email, 
   name, 
   role,
-  created_at AS "createdAt"
+  created_at AS "createdAt",
+  updated_at AS "updatedAt"
 FROM users 
 WHERE id = $1 
 LIMIT 1;

@@ -41,5 +41,5 @@ export interface IAuthRepository {
   findPasswordByEmail(
     email: string,
   ): Promise<{ id: string; passwordHash: string } | null>;
-  revokeAllRefreshToken(userId: string): Promise<void>;
+  revokeAllRefreshTokens(userId: string): Promise<void>;
 }
