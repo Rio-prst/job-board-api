@@ -33,4 +33,5 @@ export interface ICompaniesRepository {
   findById(id: string): Promise<CompanyWithJobCount | null>;
   findByUserId(userId: string): Promise<Company | null>;
   updateById(id: string, data: UpdateCompanyInput): Promise<Company>;
+  updateLogoUrl(id: string, logoUrl: string): Promise<Company>;
 }

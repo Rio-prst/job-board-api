@@ -8,7 +8,10 @@ import {
   Inject,
   HttpCode,
   HttpStatus,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ICompaniesService } from './interfaces/companies.service.interface';
 import {
   type CreateCompanyDto,
@@ -19,6 +22,7 @@ import {
   UpdateCompanySchema,
 } from './dto/update-company.dto';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { FileValidationPipe } from '../../common/pipes/file-validation.pipe';
 import { ApiResponse } from '../../common/types/api-response';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
@@ -57,5 +61,23 @@ export class CompaniesController {
   ): Promise<ApiResponse> {
     const company = await this.companiesService.updateById(id, userId, dto);
     return new ApiResponse('Company updated successfully', company);
+  }
+
+  @Post(':id/logo')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLogo(
+    @Param('id') id: string,
+    @CurrentUser('userId') userId: string,
+    @UploadedFile(
+      new FileValidationPipe({
+        maxSizeBytes: 5 * 1024 * 1024,
+        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<ApiResponse> {
+    const result = await this.companiesService.uploadLogo(id, userId, file);
+    return new ApiResponse('Logo uploaded successfully', result);
   }
 }

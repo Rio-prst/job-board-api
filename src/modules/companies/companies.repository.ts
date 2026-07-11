@@ -11,6 +11,7 @@ import {
   getCompanyById,
   getCompanyByUserId,
   updateCompany,
+  updateCompanyLogo,
 } from '../../generated/prisma/sql';
 import { PrismaService } from '../../prisma/prisma.service';
 import { nullableParam } from 'src/common/utils/typed-sql.util';
@@ -94,6 +95,27 @@ export class CompaniesRepository implements ICompaniesRepository {
 
     if (!company) {
       throw new Error('Failed to update company');
+    }
+
+    return {
+      id: company.id.toString(),
+      userId: company.userId.toString(),
+      name: company.name,
+      description: company.description,
+      logoUrl: company.logoUrl,
+      website: company.website,
+      createdAt: company.createdAt,
+      updatedAt: company.updatedAt,
+    };
+  }
+
+  async updateLogoUrl(id: string, logoUrl: string): Promise<Company> {
+    const [company] = await this.prisma.$queryRawTyped(
+      updateCompanyLogo(BigInt(id), logoUrl),
+    );
+
+    if (!company) {
+      throw new Error('Failed to update company logo');
     }
 
     return {

@@ -2,6 +2,10 @@ import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { Company, CompanyWithJobCount } from './companies.repository.interface';
 
+export interface UploadLogoResult {
+  logoUrl: string;
+}
+
 export const ICompaniesService = Symbol('ICompaniesService');
 
 export interface ICompaniesService {
@@ -12,4 +16,9 @@ export interface ICompaniesService {
     userId: string,
     dto: UpdateCompanyDto,
   ): Promise<Company>;
+  uploadLogo(
+    id: string,
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<UploadLogoResult>;
 }

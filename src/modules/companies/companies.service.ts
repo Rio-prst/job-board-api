@@ -9,12 +9,14 @@ import { ICompaniesService } from './interfaces/companies.service.interface';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ICompaniesRepository } from './interfaces/companies.repository.interface';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class CompaniesService implements ICompaniesService {
   constructor(
     @Inject(ICompaniesRepository)
     private readonly companiesRepository: ICompaniesRepository,
+    private readonly storageService: StorageService,
   ) {}
 
   async create(userId: string, dto: CreateCompanyDto) {
@@ -58,5 +60,35 @@ export class CompaniesService implements ICompaniesService {
     }
 
     return this.companiesRepository.updateById(id, dto);
+  }
+
+  async uploadLogo(
+    id: string,
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<{ logoUrl: string }> {
+    const company = await this.companiesRepository.findById(id);
+    if (!company) {
+      throw new NotFoundException({
+        code: 'company.not_found',
+        message: 'Company not found',
+      });
+    }
+
+    if (company.userId !== userId) {
+      throw new ForbiddenException({
+        code: 'company.forbidden',
+        message: 'Forbidden',
+      });
+    }
+
+    const ext = file.originalname.split('.').pop();
+    const key = `logos/${id}_${Date.now()}.${ext}`;
+
+    await this.storageService.upload(key, file.buffer, file.mimetype);
+    await this.companiesRepository.updateLogoUrl(id, key);
+
+    const logoUrl = await this.storageService.getPresignedUrl(key);
+    return { logoUrl };
   }
 }
