@@ -10,7 +10,7 @@ import {
   updateUser,
 } from '../../generated/prisma/sql';
 import { PrismaService } from '../../prisma/prisma.service';
-import { nullableParam } from 'src/common/utils/typed-sql.util';
+import { nullableParam } from '../../common/utils/typed-sql.util';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
