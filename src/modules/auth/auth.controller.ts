@@ -15,7 +15,7 @@ import {
 } from './dto/refresh-token.dto';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { ApiResponse } from '../../common/types/api-response';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -62,11 +62,10 @@ export class AuthController {
 
   @Public()
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @Body(new ZodValidationPipe(RefreshTokenSchema)) dto: RefreshTokenDto,
-  ): Promise<ApiResponse> {
+  ): Promise<void> {
     await this.authService.logout(dto);
-    return new ApiResponse('Logged out successfully');
   }
 }
