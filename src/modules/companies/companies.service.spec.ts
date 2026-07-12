@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
 import { CompaniesService } from './companies.service';
 import { ICompaniesRepository } from './interfaces/companies.repository.interface';
-import { StorageService } from '../storage/storage.service';
+import { IStorageService } from '../storage/interfaces/storage.service.interface';
 import {
   ConflictException,
   NotFoundException,
@@ -22,7 +22,7 @@ describe('CompaniesService', () => {
       providers: [
         CompaniesService,
         { provide: ICompaniesRepository, useValue: mockRepository },
-        { provide: StorageService, useValue: mockStorageService },
+        { provide: IStorageService, useValue: mockStorageService },
       ],
     }).compile();
 

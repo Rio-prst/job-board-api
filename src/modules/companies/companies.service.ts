@@ -9,14 +9,15 @@ import { ICompaniesService } from './interfaces/companies.service.interface';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ICompaniesRepository } from './interfaces/companies.repository.interface';
-import { StorageService } from '../storage/storage.service';
+import { IStorageService } from '../storage/interfaces/storage.service.interface';
 
 @Injectable()
 export class CompaniesService implements ICompaniesService {
   constructor(
     @Inject(ICompaniesRepository)
     private readonly companiesRepository: ICompaniesRepository,
-    private readonly storageService: StorageService,
+    @Inject(IStorageService)
+    private readonly storageService: IStorageService,
   ) {}
 
   async create(userId: string, dto: CreateCompanyDto) {
