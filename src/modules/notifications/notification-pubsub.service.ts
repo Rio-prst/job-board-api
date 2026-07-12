@@ -48,9 +48,16 @@ export class NotificationPubSubService
     await this.subscriber.subscribe('job-board:notifications');
     this.subscriber.on('message', (channel: string, message: string) => {
       if (channel === 'job-board:notifications') {
-        const parsed: unknown = JSON.parse(message);
-        if (isRedisMessage(parsed)) {
-          this.notificationSubject$.next(parsed);
+        try {
+          const parsed: unknown = JSON.parse(message);
+          if (isRedisMessage(parsed)) {
+            this.notificationSubject$.next(parsed);
+          }
+        } catch (error) {
+          console.error(
+            'Failed to parse inbound Redis notification message:',
+            error,
+          );
         }
       }
     });
