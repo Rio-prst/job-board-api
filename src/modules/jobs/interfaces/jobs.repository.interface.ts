@@ -78,9 +78,9 @@ export interface IJobsRepository {
   findById(id: string): Promise<JobListItem | null>;
   getCompanyId(id: string): Promise<string | null>;
   updateById(id: string, data: UpdateJobInput): Promise<Job>;
-  deleteById(id: string): Promise<void>;
+  deleteById(id: string): Promise<boolean>;
   createAttachment(data: CreateAttachmentInput): Promise<CreatedAttachment>;
   listAttachmentsByJobId(jobId: string): Promise<Attachment[]>;
   getAttachmentById(id: string): Promise<AttachmentWithCompanyId | null>;
-  deleteAttachment(id: string): Promise<void>;
+  deleteAttachment(id: string): Promise<boolean>;
 }
