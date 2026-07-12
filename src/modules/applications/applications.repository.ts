@@ -13,7 +13,7 @@ import {
 } from './interfaces/applications.repository.interface';
 import {
   createApplication,
-  getJobCompanyId, // reused as-is from Jobs' generated sql — same query, no need to duplicate it
+  getJobCompanyId,
   getApplicationById,
   listApplicationsByUserId,
   countApplicationsByUserId,
@@ -108,7 +108,7 @@ export class ApplicationsRepository implements IApplicationsRepository {
     return rows.map((r) => ({
       id: r.id.toString(),
       jobId: r.jobId.toString(),
-      userId, // known from the query param, not selected by the SQL
+      userId,
       status: toApplicationStatus(r.status),
       resumeUrl: r.resumeUrl,
       createdAt: r.createdAt,
