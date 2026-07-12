@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { createHash } from 'crypto';
 import {
   IJobsService,
   JobDetail,
@@ -12,6 +13,7 @@ import {
 import { IJobsRepository } from './interfaces/jobs.repository.interface';
 import { ICompaniesService } from '../companies/interfaces/companies.service.interface';
 import { IStorageService } from '../storage/interfaces/storage.service.interface';
+import { ICacheService } from '../cache/interfaces/cache.service.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
@@ -25,6 +27,8 @@ export class JobsService implements IJobsService {
     private readonly companiesService: ICompaniesService,
     @Inject(IStorageService)
     private readonly storageService: IStorageService,
+    @Inject(ICacheService)
+    private readonly cacheService: ICacheService,
   ) {}
 
   async create(userId: string, dto: CreateJobDto) {
@@ -36,7 +40,7 @@ export class JobsService implements IJobsService {
       });
     }
 
-    return this.jobsRepository.create({
+    const result = await this.jobsRepository.create({
       companyId: company.id,
       title: dto.title,
       description: dto.description,
@@ -44,21 +48,37 @@ export class JobsService implements IJobsService {
       salaryMin: dto.salaryMin,
       salaryMax: dto.salaryMax,
     });
+
+    await this.cacheService.scanAndDelete('jobs:*');
+
+    return result;
   }
 
   async list(query: PaginationQueryDto): Promise<JobListResult> {
+    const cacheKey = this.buildListKey(query);
+    const cached = await this.cacheService.get<JobListResult>(cacheKey);
+    if (cached) return cached;
+
     const [data, total] = await Promise.all([
       this.jobsRepository.list(query),
       this.jobsRepository.count(query),
     ]);
 
-    return {
+    const result: JobListResult = {
       data,
       meta: { page: query.page, limit: query.limit, total },
     };
+
+    await this.cacheService.set(cacheKey, result, 300);
+
+    return result;
   }
 
   async findById(id: string): Promise<JobDetail> {
+    const cacheKey = `jobs:detail:${id}`;
+    const cached = await this.cacheService.get<JobDetail>(cacheKey);
+    if (cached) return cached;
+
     const job = await this.jobsRepository.findById(id);
     if (!job) {
       throw new NotFoundException({
@@ -69,7 +89,7 @@ export class JobsService implements IJobsService {
 
     const attachments = await this.jobsRepository.listAttachmentsByJobId(id);
 
-    return {
+    const result: JobDetail = {
       id: job.id,
       companyId: job.companyId,
       title: job.title,
@@ -87,18 +107,26 @@ export class JobsService implements IJobsService {
       attachments,
       _count: { applications: job.applicationCount },
     };
+
+    await this.cacheService.set(cacheKey, result, 600);
+
+    return result;
   }
 
   async updateById(id: string, userId: string, dto: UpdateJobDto) {
     await this.assertOwnership(id, userId);
 
-    return this.jobsRepository.updateById(id, {
+    const result = await this.jobsRepository.updateById(id, {
       title: dto.title,
       description: dto.description,
       location: dto.location,
       salaryMin: dto.salaryMin,
       salaryMax: dto.salaryMax,
     });
+
+    await this.cacheService.scanAndDelete('jobs:*');
+
+    return result;
   }
 
   async deleteById(id: string, userId: string) {
@@ -111,6 +139,8 @@ export class JobsService implements IJobsService {
         message: 'Job not found',
       });
     }
+
+    await this.cacheService.scanAndDelete('jobs:*');
   }
 
   async uploadAttachment(
@@ -173,6 +203,16 @@ export class JobsService implements IJobsService {
     }
 
     await this.storageService.delete(attachment.filename);
+  }
+
+  private buildListKey(query: PaginationQueryDto): string {
+    const normalized = Object.entries(query)
+      .filter(([, v]) => v != null)
+      .sort(([a], [b]) => a.localeCompare(b));
+    const hash = createHash('md5')
+      .update(JSON.stringify(normalized))
+      .digest('hex');
+    return `jobs:${hash}`;
   }
 
   private async assertOwnership(jobId: string, userId: string) {
