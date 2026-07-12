@@ -8,7 +8,6 @@ import {
 import { ApplicationStatus } from '../../generated/prisma';
 import {
   IApplicationsRepository,
-  Application,
   CreatedApplication,
 } from './interfaces/applications.repository.interface';
 import {
@@ -77,10 +76,26 @@ export class ApplicationsService implements IApplicationsService {
     userId: string,
     query: ListApplicationsDto,
   ): Promise<ApplicationListResult> {
-    const [data, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       this.applicationsRepository.listByUserId(userId, query),
       this.applicationsRepository.countByUserId(userId, query),
     ]);
+
+    const data = rows.map((row) => ({
+      id: row.id,
+      jobId: row.jobId,
+      status: row.status,
+      resumeUrl: row.resumeUrl,
+      createdAt: row.createdAt,
+      job: {
+        id: row.jobId,
+        title: row.jobTitle,
+        company: {
+          id: row.companyId,
+          name: row.companyName,
+        },
+      },
+    }));
 
     return { data, meta: { page: query.page, limit: query.limit, total } };
   }
@@ -92,19 +107,28 @@ export class ApplicationsService implements IApplicationsService {
   ): Promise<CompanyApplicationListResult> {
     await this.assertJobOwnership(jobId, userId);
 
-    const [data, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       this.applicationsRepository.listByJobId(jobId, query),
       this.applicationsRepository.countByJobId(jobId, query),
     ]);
 
+    const data = rows.map((row) => ({
+      id: row.id,
+      userId: row.userId,
+      status: row.status,
+      resumeUrl: row.resumeUrl,
+      createdAt: row.createdAt,
+      user: {
+        id: row.userId,
+        name: row.userName,
+        email: row.userEmail,
+      },
+    }));
+
     return { data, meta: { page: query.page, limit: query.limit, total } };
   }
 
-  async updateStatus(
-    id: string,
-    userId: string,
-    status: ApplicationStatus,
-  ): Promise<Application> {
+  async updateStatus(id: string, userId: string, status: ApplicationStatus) {
     const application = await this.applicationsRepository.findById(id);
     if (!application) {
       throw new NotFoundException({
@@ -114,13 +138,15 @@ export class ApplicationsService implements IApplicationsService {
     }
 
     await this.assertJobOwnership(application.jobId, userId);
-
     const updated = await this.applicationsRepository.updateStatus(id, status);
-
-    // TODO: emit application.status_updated once NotificationsModule
-    // exists, so the applicant gets an application_update notification.
-
-    return updated;
+    return {
+      id: updated.id,
+      jobId: updated.jobId,
+      userId: updated.userId,
+      status: updated.status,
+      resumeUrl: updated.resumeUrl,
+      createdAt: updated.createdAt,
+    };
   }
 
   private async assertJobOwnership(

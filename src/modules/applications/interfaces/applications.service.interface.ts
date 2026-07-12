@@ -1,10 +1,5 @@
 import { ApplicationStatus } from '../../../generated/prisma';
-import {
-  Application,
-  ApplicationListItem,
-  ApplicationForCompany,
-  CreatedApplication,
-} from './applications.repository.interface';
+import { CreatedApplication } from './applications.repository.interface';
 
 export interface ListApplicationsDto {
   status?: ApplicationStatus;
@@ -12,13 +7,51 @@ export interface ListApplicationsDto {
   limit: number;
 }
 
+export interface ApplicationListItemResponse {
+  id: string;
+  jobId: string;
+  status: ApplicationStatus;
+  resumeUrl: string;
+  createdAt: Date;
+  job: {
+    id: string;
+    title: string;
+    company: {
+      id: string;
+      name: string;
+    };
+  };
+}
+
+export interface ApplicationForCompanyResponse {
+  id: string;
+  userId: string;
+  status: ApplicationStatus;
+  resumeUrl: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface UpdateApplicationStatusResponse {
+  id: string;
+  jobId: string;
+  userId: string;
+  status: ApplicationStatus;
+  resumeUrl: string;
+  createdAt: Date;
+}
+
 export interface ApplicationListResult {
-  data: ApplicationListItem[];
+  data: ApplicationListItemResponse[];
   meta: { page: number; limit: number; total: number };
 }
 
 export interface CompanyApplicationListResult {
-  data: ApplicationForCompany[];
+  data: ApplicationForCompanyResponse[];
   meta: { page: number; limit: number; total: number };
 }
 
@@ -43,5 +76,5 @@ export interface IApplicationsService {
     id: string,
     userId: string,
     status: ApplicationStatus,
-  ): Promise<Application>;
+  ): Promise<UpdateApplicationStatusResponse>;
 }
