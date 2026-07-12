@@ -22,7 +22,12 @@ export const INotificationsRepository = Symbol('INotificationsRepository');
 
 export interface INotificationsRepository {
   create(input: CreateNotificationInput): Promise<Notification>;
-  listByUserId(userId: string, unread: boolean | null, limit: number, offset: number): Promise<Notification[]>;
+  listByUserId(
+    userId: string,
+    unread: boolean | null,
+    limit: number,
+    offset: number,
+  ): Promise<Notification[]>;
   countByUserId(userId: string, unread: boolean | null): Promise<number>;
   countUnreadByUserId(userId: string): Promise<number>;
   findById(id: string): Promise<NotificationOwnerCheck | null>;

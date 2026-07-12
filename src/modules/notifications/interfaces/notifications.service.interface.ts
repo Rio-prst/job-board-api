@@ -1,4 +1,4 @@
-import { QueryNotificationDto } from '../dtos/query-notification.dto';
+import { QueryNotificationDto } from '../dto/query-notification.dto';
 
 export type NotificationType =
   'new_job' | 'new_application' | 'application_update' | 'new_message';
