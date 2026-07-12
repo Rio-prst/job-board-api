@@ -165,6 +165,8 @@ export class JobsService implements IJobsService {
 
     const url = await this.storageService.getPresignedUrl(key);
 
+    await this.cacheService.del(`jobs:detail:${id}`);
+
     return { ...attachment, url };
   }
 
@@ -203,6 +205,8 @@ export class JobsService implements IJobsService {
     }
 
     await this.storageService.delete(attachment.filename);
+
+    await this.cacheService.del(`jobs:detail:${jobId}`);
   }
 
   private buildListKey(query: PaginationQueryDto): string {
