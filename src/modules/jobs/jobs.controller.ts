@@ -68,6 +68,7 @@ export class JobsController {
   }
 
   @Patch(':id')
+  @Roles('company')
   async updateById(
     @Param('id') id: string,
     @CurrentUser('userId') userId: string,
@@ -78,6 +79,7 @@ export class JobsController {
   }
 
   @Delete(':id')
+  @Roles('company')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteById(
     @Param('id') id: string,
@@ -115,6 +117,7 @@ export class JobsController {
   }
 
   @Delete(':jobId/attachments/:attachmentId')
+  @Roles('company')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteAttachment(
     @Param('jobId') jobId: string,
