@@ -5,4 +5,5 @@ export interface ICacheService {
   set(key: string, value: unknown, ttl?: number): Promise<void>;
   del(key: string): Promise<void>;
   scanAndDelete(pattern: string): Promise<void>;
+  isConnected(): boolean;
 }
