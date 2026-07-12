@@ -7,8 +7,9 @@ SELECT
   a.resume_url AS "resumeUrl",
   a.created_at AS "createdAt",
   a.updated_at AS "updatedAt",
-  j.company_id AS "companyId"
+  c.user_id AS "companyOwnerUserId"
 FROM applications a
 JOIN jobs j ON j.id = a.job_id
+JOIN companies c ON c.id = j.company_id
 WHERE a.id = $1
 LIMIT 1;
