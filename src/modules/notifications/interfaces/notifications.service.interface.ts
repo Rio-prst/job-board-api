@@ -1,19 +1,8 @@
 import { QueryNotificationDto } from '../dto/query-notification.dto';
-
-export type NotificationType =
-  'new_job' | 'new_application' | 'application_update' | 'new_message';
-export type JsonValue =
-  string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
-
-export interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  read: boolean;
-  data: JsonValue;
-  createdAt: Date;
-}
+import {
+  Notification,
+  NotificationType,
+} from './notifications.repository.interface';
 
 export interface NotificationListResult {
   data: Notification[];

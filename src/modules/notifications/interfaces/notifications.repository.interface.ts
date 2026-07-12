@@ -1,7 +1,18 @@
-import {
-  Notification,
-  NotificationType,
-} from './notifications.service.interface';
+export type NotificationType =
+  'new_job' | 'new_application' | 'application_update' | 'new_message';
+export type JsonValue =
+  string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[];
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  data: JsonValue;
+  createdAt: Date;
+}
 
 export interface NotificationOwnerCheck {
   id: string;

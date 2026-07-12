@@ -1,8 +1,8 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { Subject, Observable } from 'rxjs';
-import { NotificationType } from './interfaces/notifications.service.interface';
+import { NotificationType } from './interfaces/notifications.repository.interface';
 
 export interface SseNotificationPayload {
   type: NotificationType;
@@ -15,6 +15,15 @@ export interface SseNotificationPayload {
 interface RedisMessage {
   userId: string;
   payload: SseNotificationPayload;
+}
+
+function isRedisMessage(obj: unknown): obj is RedisMessage {
+  if (!obj || typeof obj !== 'object') return false;
+  const candidate = obj as Record<string, unknown>;
+  return (
+    typeof candidate.userId === 'string' &&
+    typeof candidate.payload === 'object'
+  );
 }
 
 @Injectable()
@@ -39,8 +48,10 @@ export class NotificationPubSubService
     await this.subscriber.subscribe('job-board:notifications');
     this.subscriber.on('message', (channel: string, message: string) => {
       if (channel === 'job-board:notifications') {
-        const parsed = JSON.parse(message) as RedisMessage;
-        this.notificationSubject$.next(parsed);
+        const parsed: unknown = JSON.parse(message);
+        if (isRedisMessage(parsed)) {
+          this.notificationSubject$.next(parsed);
+        }
       }
     });
   }
