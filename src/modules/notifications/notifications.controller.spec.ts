@@ -6,6 +6,7 @@ import { NotificationsController } from './notifications.controller';
 import { INotificationsService } from './interfaces/notifications.service.interface';
 import { NotificationPubSubService, SseNotificationPayload } from './notification-pubsub.service';
 import { ApiResponse } from '../../common/types/api-response';
+import { Notification } from './interfaces/notifications.repository.interface';
 
 describe('NotificationsController', () => {
   let controller: NotificationsController;
@@ -47,7 +48,7 @@ describe('NotificationsController', () => {
 
   describe('markAsRead', () => {
     it('should forward request parameters to service layer', async () => {
-      const mockNotification = {
+      const mockNotification: Notification = {
         id: '1',
         userId: '1234567890',
         type: 'new_job',

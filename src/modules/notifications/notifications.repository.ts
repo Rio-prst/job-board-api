@@ -63,7 +63,7 @@ export class NotificationsRepository implements INotificationsRepository {
         input.type,
         input.title,
         input.message,
-        input.data,
+        JSON.stringify(input.data),
       ),
     );
 

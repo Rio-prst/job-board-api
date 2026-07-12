@@ -6,7 +6,7 @@ export type JsonValue =
 export interface Notification {
   id: string;
   userId: string;
-  type: string;
+  type: NotificationType;
   title: string;
   message: string;
   read: boolean;
@@ -21,12 +21,11 @@ export interface NotificationOwnerCheck {
 }
 
 export interface CreateNotificationInput {
-  id: string;
   userId: string;
   type: NotificationType;
   title: string;
   message: string;
-  data: string;
+  data: JsonValue;
 }
 
 export const INotificationsRepository = Symbol('INotificationsRepository');

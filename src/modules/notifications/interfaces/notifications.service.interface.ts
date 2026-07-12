@@ -14,6 +14,20 @@ export interface NotificationListResult {
   };
 }
 
+export interface NotificationPayloadMap {
+  new_job: { jobId: string };
+  new_application: { applicationId: string; jobId: string };
+  application_update: { applicationId: string; status: string };
+  new_message: { applicationId: string; senderId: string };
+}
+
+export const NOTIFICATION_TITLES: Record<NotificationType, string> = {
+  new_job: 'New job posted',
+  new_application: 'New application received',
+  application_update: 'Application status updated',
+  new_message: 'New message',
+};
+
 export const INotificationsService = Symbol('INotificationsService');
 
 export interface INotificationsService {
@@ -22,11 +36,10 @@ export interface INotificationsService {
     query: QueryNotificationDto,
   ): Promise<NotificationListResult>;
   markAsRead(id: string, currentUserId: string): Promise<Notification>;
-  createAndEmit(
+  createAndEmit<T extends keyof NotificationPayloadMap>(
     userId: string,
-    type: NotificationType,
-    title: string,
+    type: T,
     message: string,
-    data: Record<string, unknown>,
+    data: NotificationPayloadMap[T],
   ): Promise<Notification>;
 }

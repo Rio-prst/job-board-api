@@ -4,13 +4,15 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import crypto from 'crypto';
 import {
   INotificationsService,
   NotificationListResult,
+  NotificationPayloadMap,
+  NOTIFICATION_TITLES,
 } from './interfaces/notifications.service.interface';
 import {
   INotificationsRepository,
+  JsonValue,
   Notification,
   NotificationType,
 } from './interfaces/notifications.repository.interface';
@@ -21,7 +23,7 @@ import { NotificationPubSubService } from './notification-pubsub.service';
 export class NotificationsService implements INotificationsService {
   constructor(
     @Inject(INotificationsRepository)
-    private readonly repository: INotificationsRepository,
+    private readonly notificationsRepository: INotificationsRepository,
     private readonly pubSubService: NotificationPubSubService,
   ) {}
 
@@ -29,63 +31,70 @@ export class NotificationsService implements INotificationsService {
     userId: string,
     query: QueryNotificationDto,
   ): Promise<NotificationListResult> {
-    const { page, limit, unread } = query;
-    const skip = (page - 1) * limit;
+    const offset = (query.page - 1) * query.limit;
+    const unread = query.unread ?? null;
 
     const [notifications, total, unreadCount] = await Promise.all([
-      this.repository.listByUserId(userId, unread ?? null, limit, skip),
-      this.repository.countByUserId(userId, unread ?? null),
-      this.repository.countUnreadByUserId(userId),
+      this.notificationsRepository.listByUserId(
+        userId,
+        unread,
+        query.limit,
+        offset,
+      ),
+      this.notificationsRepository.countByUserId(userId, unread),
+      this.notificationsRepository.countUnreadByUserId(userId),
     ]);
 
     return {
       data: notifications,
-      meta: { page, limit, total, unreadCount },
+      meta: { page: query.page, limit: query.limit, total, unreadCount },
     };
   }
 
   async markAsRead(id: string, currentUserId: string): Promise<Notification> {
-    const notification = await this.repository.findById(id);
+    const notification = await this.notificationsRepository.findById(id);
     if (!notification) {
-      throw new NotFoundException('Notification not found');
+      throw new NotFoundException({
+        code: 'notification.not_found',
+        message: 'Notification not found',
+      });
     }
 
     if (notification.userId !== currentUserId) {
-      throw new ForbiddenException(
-        'You are not authorized to access this notification',
-      );
+      throw new ForbiddenException({
+        code: 'notification.forbidden',
+        message: 'Forbidden',
+      });
     }
 
-    return this.repository.markAsRead(id);
+    return this.notificationsRepository.markAsRead(id);
   }
 
-  async createAndEmit(
+  async createAndEmit<T extends NotificationType>(
     userId: string,
-    type: NotificationType,
-    title: string,
+    type: T,
     message: string,
-    data: Record<string, unknown>,
+    data: NotificationPayloadMap[T],
   ): Promise<Notification> {
-    const id = crypto.randomUUID();
-    const stringifiedData = JSON.stringify(data);
+    const title = NOTIFICATION_TITLES[type];
+    const payload: JsonValue = { ...data };
 
-    const newNotification = await this.repository.create({
-      id,
+    const notification = await this.notificationsRepository.create({
       userId,
       type,
       title,
       message,
-      data: stringifiedData,
+      data: payload,
     });
 
     await this.pubSubService.publish(userId, {
       type,
       title,
       message,
-      data,
-      createdAt: newNotification.createdAt.toISOString(),
+      data: payload,
+      createdAt: notification.createdAt.toISOString(),
     });
 
-    return newNotification;
+    return notification;
   }
 }

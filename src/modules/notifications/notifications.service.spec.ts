@@ -31,7 +31,7 @@ describe('NotificationsService', () => {
           id: '1',
           userId: '1234567890',
           type: 'new_job',
-          title: 'Title',
+          title: 'New job posted',
           message: 'Message',
           read: false,
           data: { jobId: '1' },
@@ -73,10 +73,10 @@ describe('NotificationsService', () => {
         id: '1',
         userId: '1234567890',
         type: 'new_job',
-        title: 'Title',
+        title: 'New job posted',
         message: 'Message',
         read: true,
-        data: null,
+        data: { jobId: '1' },
         createdAt: new Date(),
       };
 
@@ -103,43 +103,45 @@ describe('NotificationsService', () => {
   describe('createAndEmit', () => {
     it('should create database record and trigger publish event through Redis', async () => {
       const mockCreated: Notification = {
-        id: 'generated-uuid',
+        id: '1',
         userId: '1234567890',
         type: 'new_job',
-        title: 'New Opening',
+        title: 'New job posted',
         message: 'Check out',
         read: false,
-        data: { test: true },
+        data: { jobId: '99' },
         createdAt: new Date(),
       };
 
       mockRepository.create.mockResolvedValue(mockCreated);
       mockPubSubService.publish.mockResolvedValue(undefined);
-
       const result = await service.createAndEmit(
         '1234567890',
         'new_job',
-        'New Opening',
         'Check out',
-        { test: true },
+        { jobId: '99' },
       );
 
       expect(result).toBeDefined();
       expect(mockRepository.create).toHaveBeenCalled();
       expect(mockPubSubService.publish).toHaveBeenCalledWith('1234567890', {
         type: 'new_job',
-        title: 'New Opening',
+        title: 'New job posted',
         message: 'Check out',
-        data: { test: true },
+        data: { jobId: '99' },
         createdAt: mockCreated.createdAt.toISOString(),
       });
     });
 
     it('should abort publishing and throw error if database transaction fails', async () => {
       mockRepository.create.mockRejectedValue(new Error('Database connection timeout'));
-
       await expect(
-        service.createAndEmit('1234567890', 'new_job', 'Title', 'Msg', {})
+        service.createAndEmit(
+          '1234567890', 
+          'new_job', 
+          'Msg', 
+          { jobId: '99' }
+        )
       ).rejects.toThrow('Database connection timeout');
 
       expect(mockPubSubService.publish).not.toHaveBeenCalled();
