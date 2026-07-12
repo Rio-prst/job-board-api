@@ -28,7 +28,16 @@ export class CompaniesService implements ICompaniesService {
       });
     }
 
-    return this.companiesRepository.create({ userId, ...dto });
+    const company = await this.companiesRepository.create({ userId, ...dto });
+    return {
+      id: company.id,
+      userId: company.userId,
+      name: company.name,
+      description: company.description,
+      logoUrl: company.logoUrl,
+      website: company.website,
+      createdAt: company.createdAt,
+    };
   }
 
   async findById(id: string) {

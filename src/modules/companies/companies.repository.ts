@@ -5,6 +5,7 @@ import {
   UpdateCompanyInput,
   Company,
   CompanyWithJobCount,
+  CreatedCompany,
 } from './interfaces/companies.repository.interface';
 import {
   createCompany,
@@ -14,13 +15,13 @@ import {
   updateCompanyLogo,
 } from '../../generated/prisma/sql';
 import { PrismaService } from '../../prisma/prisma.service';
-import { nullableParam } from 'src/common/utils/typed-sql.util';
+import { nullableParam } from '../../common/utils/typed-sql.util';
 
 @Injectable()
 export class CompaniesRepository implements ICompaniesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: CreateCompanyInput): Promise<Company> {
+  async create(data: CreateCompanyInput): Promise<CreatedCompany> {
     const [company] = await this.prisma.$queryRawTyped(
       createCompany(
         BigInt(data.userId),
@@ -42,7 +43,6 @@ export class CompaniesRepository implements ICompaniesRepository {
       logoUrl: company.logoUrl,
       website: company.website,
       createdAt: company.createdAt,
-      updatedAt: company.updatedAt,
     };
   }
 

@@ -13,6 +13,8 @@ export interface CompanyWithJobCount extends Company {
   jobCount: number;
 }
 
+export type CreatedCompany = Omit<Company, 'updatedAt'>;
+
 export interface CreateCompanyInput {
   userId: string;
   name: string;
@@ -29,7 +31,7 @@ export interface UpdateCompanyInput {
 export const ICompaniesRepository = Symbol('ICompaniesRepository');
 
 export interface ICompaniesRepository {
-  create(data: CreateCompanyInput): Promise<Company>;
+  create(data: CreateCompanyInput): Promise<CreatedCompany>;
   findById(id: string): Promise<CompanyWithJobCount | null>;
   findByUserId(userId: string): Promise<Company | null>;
   updateById(id: string, data: UpdateCompanyInput): Promise<Company>;
