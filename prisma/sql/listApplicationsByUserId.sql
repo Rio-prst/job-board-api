@@ -8,6 +8,7 @@ SELECT
   a.status,
   a.resume_url AS "resumeUrl",
   a.created_at AS "createdAt",
+  a.updated_at AS "updatedAt",
   j.title AS "jobTitle",
   c.id AS "companyId",
   c.name AS "companyName"

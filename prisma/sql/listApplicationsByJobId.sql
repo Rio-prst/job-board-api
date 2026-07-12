@@ -8,6 +8,7 @@ SELECT
   a.status,
   a.resume_url AS "resumeUrl",
   a.created_at AS "createdAt",
+  a.updated_at AS "updatedAt",
   u.name AS "userName",
   u.email AS "userEmail"
 FROM applications a
