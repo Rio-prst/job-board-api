@@ -72,6 +72,10 @@ export class CompaniesService implements ICompaniesService {
     return this.companiesRepository.updateById(id, dto);
   }
 
+  async findByUserId(userId: string) {
+    return this.companiesRepository.findByUserId(userId);
+  }
+
   async uploadLogo(
     id: string,
     userId: string,
