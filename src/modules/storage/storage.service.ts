@@ -39,14 +39,21 @@ export class StorageService implements OnModuleInit {
   }
 
   private async ensureBucketExists(): Promise<void> {
-    await this.client.send(new CreateBucketCommand({ Bucket: this.bucket })).catch((err) => {
-      const name = err instanceof Error ? err.name : '';
-      if (name === 'BucketAlreadyOwnedByYou' || name === 'BucketAlreadyExists') {
-        this.logger.log(`Bucket "${this.bucket}" already exists, skipping creation`);
-        return;
-      }
-      throw err;
-    });
+    await this.client
+      .send(new CreateBucketCommand({ Bucket: this.bucket }))
+      .catch((err) => {
+        const name = err instanceof Error ? err.name : '';
+        if (
+          name === 'BucketAlreadyOwnedByYou' ||
+          name === 'BucketAlreadyExists'
+        ) {
+          this.logger.log(
+            `Bucket "${this.bucket}" already exists, skipping creation`,
+          );
+          return;
+        }
+        throw err;
+      });
   }
 
   async upload(key: string, body: Buffer, mimeType: string): Promise<void> {
