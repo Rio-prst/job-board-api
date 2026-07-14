@@ -7,11 +7,6 @@ import {
   CreateBucketCommand,
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest.fn(),
-}));
 
 describe('StorageService', () => {
   let service: StorageService;
@@ -87,14 +82,11 @@ describe('StorageService', () => {
   describe('getPresignedUrl', () => {
     it('should return presigned URL string', async () => {
       const key = 'logos/1_123.jpg';
-      const expectedUrl =
-        'http://minio:9000/test-bucket/logos/1_123.jpg?signed=true';
-      (getSignedUrl as jest.Mock).mockResolvedValue(expectedUrl);
 
       const result = await service.getPresignedUrl(key);
 
       expect(typeof result).toBe('string');
-      expect(getSignedUrl).toHaveBeenCalled();
+      expect(result).toContain(key);
     });
   });
 });
