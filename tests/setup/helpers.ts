@@ -146,7 +146,7 @@ export async function seedJob(
 
 export function createTestFile(
   filename: string = 'test.pdf',
-  _mimeType: string = 'application/pdf',
+  mimeType: string = 'application/pdf',
   size: number = 1024,
 ) {
   return Buffer.alloc(size, `test file content for ${filename}`);
