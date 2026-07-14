@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { ChatGateway } from './chat.gateway';
 import { IChatService } from './interfaces/chat.service.interface';
 import { IAuthRepository } from '../auth/interfaces/auth.repository.interface';
-import { Server, DefaultEventsMap } from 'socket.io';
+import { Server } from 'socket.io';
 
 type MockSocket = {
   id: string;

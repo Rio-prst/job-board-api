@@ -4,7 +4,6 @@ import { LoggingInterceptor } from './logging.interceptor';
 
 describe('LoggingInterceptor', () => {
   let interceptor: LoggingInterceptor;
-  let mockContext: ExecutionContext;
   let logSpy: jest.SpyInstance;
 
   const MOCK_REQUEST_ID = 'req_mock-1234-5678';
