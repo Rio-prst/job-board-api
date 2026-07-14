@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5435/jobboard_test
+      DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5435/jobboard_test
       REDIS_URL: redis://localhost:6379
       MINIO_ENDPOINT: localhost
       MINIO_PORT: 9000
