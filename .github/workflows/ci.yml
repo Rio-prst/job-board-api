@@ -12,7 +12,6 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5435/jobboard_test
-      DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5435/jobboard_test
       REDIS_URL: redis://localhost:6379
       MINIO_ENDPOINT: localhost
       MINIO_PORT: 9000
@@ -85,5 +84,9 @@ jobs:
       - run: pnpm run test:unit
 
       - run: pnpm run test:integration
+        env:
+          DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5435/jobboard_test
 
       - run: pnpm run test:e2e
+        env:
+          DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5435/jobboard_test
