@@ -1,11 +1,10 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
-  HeadBucketCommand,
   CreateBucketCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -14,6 +13,7 @@ const PRESIGNED_URL_EXPIRY_SECONDS = 60 * 60;
 
 @Injectable()
 export class StorageService implements OnModuleInit {
+  private readonly logger = new Logger(StorageService.name);
   private readonly client: S3Client;
   private readonly bucket: string;
 
@@ -39,11 +39,14 @@ export class StorageService implements OnModuleInit {
   }
 
   private async ensureBucketExists(): Promise<void> {
-    try {
-      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
-    } catch {
-      await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }));
-    }
+    await this.client.send(new CreateBucketCommand({ Bucket: this.bucket })).catch((err) => {
+      const name = err instanceof Error ? err.name : '';
+      if (name === 'BucketAlreadyOwnedByYou' || name === 'BucketAlreadyExists') {
+        this.logger.log(`Bucket "${this.bucket}" already exists, skipping creation`);
+        return;
+      }
+      throw err;
+    });
   }
 
   async upload(key: string, body: Buffer, mimeType: string): Promise<void> {
