@@ -5,6 +5,8 @@ import { IJobsRepository } from './interfaces/jobs.repository.interface';
 import { ICompaniesService } from '../companies/interfaces/companies.service.interface';
 import { IStorageService } from '../storage/interfaces/storage.service.interface';
 import { ICacheService } from '../cache/interfaces/cache.service.interface';
+import { IUsersService } from '../users/interfaces/users.service.interface';
+import { INotificationsService } from '../notifications/interfaces/notifications.service.interface';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 
 describe('JobsService', () => {
@@ -26,6 +28,24 @@ describe('JobsService', () => {
     scanAndDelete: jest.fn().mockResolvedValue(undefined),
     isConnected: jest.fn().mockReturnValue(true),
   };
+  const mockUsersService = {
+    getProfile: jest.fn(),
+    updateProfile: jest.fn(),
+    listIdsByRole: jest.fn().mockResolvedValue([]),
+  };
+  const mockNotificationsService = {
+    findAll: jest.fn(),
+    markAsRead: jest.fn(),
+    createAndEmit: jest.fn().mockResolvedValue({
+      id: '1',
+      userId: '1',
+      type: 'new_job',
+      message: 'test',
+      read: false,
+      data: {},
+      createdAt: new Date(),
+    }),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,6 +55,8 @@ describe('JobsService', () => {
         { provide: ICompaniesService, useValue: mockCompaniesService },
         { provide: IStorageService, useValue: mockStorageService },
         { provide: ICacheService, useValue: mockCacheService },
+        { provide: IUsersService, useValue: mockUsersService },
+        { provide: INotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 

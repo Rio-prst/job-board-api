@@ -4,6 +4,7 @@ import { ApplicationsService } from './applications.service';
 import { IApplicationsRepository } from './interfaces/applications.repository.interface';
 import { ICompaniesService } from '../companies/interfaces/companies.service.interface';
 import { IStorageService } from '../storage/interfaces/storage.service.interface';
+import { INotificationsService } from '../notifications/interfaces/notifications.service.interface';
 import {
   NotFoundException,
   ForbiddenException,
@@ -21,6 +22,19 @@ describe('ApplicationsService', () => {
     upload: jest.fn().mockResolvedValue(undefined),
     getPresignedUrl: jest.fn().mockResolvedValue('http://minio/presigned-url'),
   };
+  const mockNotificationsService = {
+    findAll: jest.fn(),
+    markAsRead: jest.fn(),
+    createAndEmit: jest.fn().mockResolvedValue({
+      id: '1',
+      userId: '1',
+      type: 'new_application',
+      message: 'test',
+      read: false,
+      data: {},
+      createdAt: new Date(),
+    }),
+  };
 
   const file = {
     buffer: Buffer.from('fake-pdf'),
@@ -36,6 +50,7 @@ describe('ApplicationsService', () => {
         { provide: IApplicationsRepository, useValue: mockRepository },
         { provide: ICompaniesService, useValue: mockCompaniesService },
         { provide: IStorageService, useValue: mockStorageService },
+        { provide: INotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
