@@ -1,4 +1,10 @@
-import { Controller, Get, Param, Inject, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Inject,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { IFilesService, FileType } from './interfaces/files.service.interface';
 import { ApiResponse as ApiRes } from '../../common/types/api-response';

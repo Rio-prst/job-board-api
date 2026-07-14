@@ -1,7 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { app } from '../setup/db';
-import { register, login, getTokens, authedReq, testEmail } from '../setup/helpers';
+import {
+  register,
+  login,
+  getTokens,
+  authedReq,
+  testEmail,
+} from '../setup/helpers';
 
 describe('Notifications (e2e)', () => {
   let appInstance: INestApplication;

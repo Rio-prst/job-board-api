@@ -13,9 +13,7 @@ describe('LoggingInterceptor', () => {
   beforeEach(() => {
     interceptor = new LoggingInterceptor();
     logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
-    jest.spyOn(Date, 'now')
-      .mockReturnValueOnce(1000)
-      .mockReturnValueOnce(1050);
+    jest.spyOn(Date, 'now').mockReturnValueOnce(1000).mockReturnValueOnce(1050);
   });
 
   afterEach(() => {

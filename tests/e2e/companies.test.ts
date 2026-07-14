@@ -1,6 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { app } from '../setup/db';
-import { register, login, getTokens, seedCompany, authedReq, testEmail } from '../setup/helpers';
+import {
+  register,
+  login,
+  getTokens,
+  seedCompany,
+  authedReq,
+  testEmail,
+} from '../setup/helpers';
 
 describe('Companies (e2e)', () => {
   let appInstance: INestApplication;

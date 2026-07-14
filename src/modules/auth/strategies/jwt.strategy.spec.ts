@@ -13,7 +13,9 @@ describe('JwtStrategy', () => {
   });
 
   beforeEach(() => {
-    strategy = new JwtStrategy(mockAuthRepository as unknown as IAuthRepository);
+    strategy = new JwtStrategy(
+      mockAuthRepository as unknown as IAuthRepository,
+    );
     jest.clearAllMocks();
   });
 

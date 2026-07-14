@@ -37,10 +37,21 @@ export class ChatController {
 
   @Get(':applicationId/messages')
   @Roles('company', 'applicant')
-  @ApiParam({ name: 'applicationId', description: 'Application ID (chat room)' })
+  @ApiParam({
+    name: 'applicationId',
+    description: 'Application ID (chat room)',
+  })
   @ApiOperation({ summary: 'Get chat messages for an application' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number (default 1)' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Messages per page (default 50, max 100)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Messages per page (default 50, max 100)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Messages fetched successfully',

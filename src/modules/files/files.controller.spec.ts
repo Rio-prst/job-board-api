@@ -10,9 +10,7 @@ describe('FilesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FilesController],
-      providers: [
-        { provide: IFilesService, useValue: mockFilesService },
-      ],
+      providers: [{ provide: IFilesService, useValue: mockFilesService }],
     }).compile();
 
     controller = module.get<FilesController>(FilesController);

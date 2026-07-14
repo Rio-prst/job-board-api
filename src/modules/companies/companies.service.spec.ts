@@ -103,16 +103,14 @@ describe('CompaniesService', () => {
       const result = await service.findById('1');
 
       expect(result).not.toBeNull();
-      expect(result!.name).toBe('Tech Corp');
-      expect(result!.jobCount).toBe(5);
+      expect(result.name).toBe('Tech Corp');
+      expect(result.jobCount).toBe(5);
     });
 
     it('should throw NotFoundException if company not found', async () => {
       mockRepository.findById.mockResolvedValue(null);
 
-      await expect(service.findById('999')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findById('999')).rejects.toThrow(NotFoundException);
     });
 
     it('should return cached company without querying DB', async () => {

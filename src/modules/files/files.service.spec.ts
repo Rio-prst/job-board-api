@@ -105,9 +105,9 @@ describe('FilesService', () => {
       it('should throw NotFoundException for non-existent company', async () => {
         mockCompaniesService.findById.mockResolvedValue(null);
 
-        await expect(
-          service.getPresignedUrl('logos', '999'),
-        ).rejects.toThrow(NotFoundException);
+        await expect(service.getPresignedUrl('logos', '999')).rejects.toThrow(
+          NotFoundException,
+        );
       });
 
       it('should throw NotFoundException when logoUrl is null', async () => {
@@ -116,9 +116,9 @@ describe('FilesService', () => {
           logoUrl: null,
         });
 
-        await expect(
-          service.getPresignedUrl('logos', '1'),
-        ).rejects.toThrow(NotFoundException);
+        await expect(service.getPresignedUrl('logos', '1')).rejects.toThrow(
+          NotFoundException,
+        );
       });
     });
 
@@ -147,7 +147,7 @@ describe('FilesService', () => {
 
       it('should return presigned URL for company owner accessing resume', async () => {
         mockApplicationsService.findById.mockResolvedValue(mockApplication);
-        mockJobsService.findById.mockResolvedValue(mockJobDetail as never);
+        mockJobsService.findById.mockResolvedValue(mockJobDetail);
         mockCompaniesService.findById.mockResolvedValue(mockCompany);
         mockStorageService.getPresignedUrl.mockResolvedValue(
           'https://minio.example.com/resumes/200_123.pdf',
@@ -180,7 +180,7 @@ describe('FilesService', () => {
         mockJobsService.findById.mockResolvedValue({
           ...mockJobDetail,
           company: { id: '99', name: 'Other', logoUrl: null },
-        } as never);
+        });
         mockCompaniesService.findById.mockResolvedValue({
           ...mockCompany,
           userId: '999',
@@ -192,9 +192,9 @@ describe('FilesService', () => {
       });
 
       it('should throw ForbiddenException when not authenticated', async () => {
-        await expect(
-          service.getPresignedUrl('resumes', '1'),
-        ).rejects.toThrow(ForbiddenException);
+        await expect(service.getPresignedUrl('resumes', '1')).rejects.toThrow(
+          ForbiddenException,
+        );
       });
 
       it('should throw NotFoundException when application not found', async () => {
@@ -214,11 +214,7 @@ describe('FilesService', () => {
           'https://minio.example.com/attachments/10_123.pdf',
         );
 
-        const result = await service.getPresignedUrl(
-          'attachments',
-          '1',
-          '100',
-        );
+        const result = await service.getPresignedUrl('attachments', '1', '100');
 
         expect(result).toEqual({
           url: 'https://minio.example.com/attachments/10_123.pdf',

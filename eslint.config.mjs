@@ -6,7 +6,7 @@ import eslintPluginJest from 'eslint-plugin-jest';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'src/generated/'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -37,7 +37,7 @@ export default tseslint.config(
     plugins: {
       jest: eslintPluginJest,
     },
-    rulse: {
+    rules: {
       '@typescript-eslint/unbound-method': 'off',
       'jest/unbound-method': 'error',
     }

@@ -56,9 +56,7 @@ describe('StorageService', () => {
     it('should not create bucket if it already exists', async () => {
       await service.onModuleInit();
 
-      expect(mockSend).toHaveBeenCalledWith(
-        expect.any(HeadBucketCommand),
-      );
+      expect(mockSend).toHaveBeenCalledWith(expect.any(HeadBucketCommand));
       expect(mockSend).not.toHaveBeenCalledWith(
         expect.any(CreateBucketCommand),
       );
@@ -69,12 +67,8 @@ describe('StorageService', () => {
 
       await service.onModuleInit();
 
-      expect(mockSend).toHaveBeenCalledWith(
-        expect.any(HeadBucketCommand),
-      );
-      expect(mockSend).toHaveBeenCalledWith(
-        expect.any(CreateBucketCommand),
-      );
+      expect(mockSend).toHaveBeenCalledWith(expect.any(HeadBucketCommand));
+      expect(mockSend).toHaveBeenCalledWith(expect.any(CreateBucketCommand));
     });
   });
 
@@ -86,16 +80,15 @@ describe('StorageService', () => {
 
       await service.upload(key, body, mimeType);
 
-      expect(mockSend).toHaveBeenCalledWith(
-        expect.any(PutObjectCommand),
-      );
+      expect(mockSend).toHaveBeenCalledWith(expect.any(PutObjectCommand));
     });
   });
 
   describe('getPresignedUrl', () => {
     it('should return presigned URL string', async () => {
       const key = 'logos/1_123.jpg';
-      const expectedUrl = 'http://minio:9000/test-bucket/logos/1_123.jpg?signed=true';
+      const expectedUrl =
+        'http://minio:9000/test-bucket/logos/1_123.jpg?signed=true';
       (getSignedUrl as jest.Mock).mockResolvedValue(expectedUrl);
 
       const result = await service.getPresignedUrl(key);

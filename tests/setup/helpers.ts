@@ -38,11 +38,17 @@ export async function seedUser(data: RegisterInput) {
   });
 }
 
-export async function register(app: INestApplication, data: RegisterInput): Promise<Response> {
+export async function register(
+  app: INestApplication,
+  data: RegisterInput,
+): Promise<Response> {
   return request(app.getHttpServer()).post('/auth/register').send(data);
 }
 
-export async function login(app: INestApplication, data: LoginInput): Promise<Response> {
+export async function login(
+  app: INestApplication,
+  data: LoginInput,
+): Promise<Response> {
   return request(app.getHttpServer()).post('/auth/login').send(data);
 }
 

@@ -109,12 +109,36 @@ export class JobsController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'List jobs with pagination & filters' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number (default 1)' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page (default 20)' })
-  @ApiQuery({ name: 'search', required: false, description: 'Search term (title contains)' })
-  @ApiQuery({ name: 'location', required: false, description: 'Filter by location' })
-  @ApiQuery({ name: 'salaryMin', required: false, description: 'Minimum salary filter' })
-  @ApiQuery({ name: 'salaryMax', required: false, description: 'Maximum salary filter' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page (default 20)',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search term (title contains)',
+  })
+  @ApiQuery({
+    name: 'location',
+    required: false,
+    description: 'Filter by location',
+  })
+  @ApiQuery({
+    name: 'salaryMin',
+    required: false,
+    description: 'Minimum salary filter',
+  })
+  @ApiQuery({
+    name: 'salaryMax',
+    required: false,
+    description: 'Maximum salary filter',
+  })
   @ApiResponse({
     status: 200,
     description: 'Jobs fetched successfully',
@@ -153,11 +177,7 @@ export class JobsController {
     query: PaginationQueryDto,
   ): Promise<ApiRes> {
     const result = await this.jobsService.list(query);
-    return new ApiRes(
-      'Jobs fetched successfully',
-      result.data,
-      result.meta,
-    );
+    return new ApiRes('Jobs fetched successfully', result.data, result.meta);
   }
 
   @Public()
@@ -217,7 +237,10 @@ export class JobsController {
       type: 'object',
       properties: {
         title: { type: 'string', example: 'Senior Backend Engineer' },
-        description: { type: 'string', example: 'Build and scale microservices' },
+        description: {
+          type: 'string',
+          example: 'Build and scale microservices',
+        },
         location: { type: 'string', example: 'Bandung' },
         salaryMin: { type: 'number', example: 7000000 },
         salaryMax: { type: 'number', example: 15000000 },
@@ -292,7 +315,9 @@ export class JobsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', description: 'Job ID' })
-  @ApiOperation({ summary: 'Upload job attachment (PDF/JPEG/PNG/WebP, max 10 MB)' })
+  @ApiOperation({
+    summary: 'Upload job attachment (PDF/JPEG/PNG/WebP, max 10 MB)',
+  })
   @ApiBody({
     schema: {
       type: 'object',

@@ -1,7 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { app } from '../setup/db';
-import { register, login, getTokens, authedReq, testEmail } from '../setup/helpers';
+import {
+  register,
+  login,
+  getTokens,
+  authedReq,
+  testEmail,
+} from '../setup/helpers';
 
 describe('Auth (e2e)', () => {
   let appInstance: INestApplication;
@@ -217,12 +223,7 @@ describe('Auth (e2e)', () => {
 
       const { accessToken } = getTokens(loginRes);
 
-      const res = await authedReq(
-        appInstance,
-        'get',
-        '/users/me',
-        accessToken,
-      );
+      const res = await authedReq(appInstance, 'get', '/users/me', accessToken);
 
       expect(res.status).toBe(200);
       expect(res.body.message).toBe('Profile fetched successfully');

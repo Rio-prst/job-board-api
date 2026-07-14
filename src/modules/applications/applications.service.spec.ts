@@ -4,7 +4,11 @@ import { ApplicationsService } from './applications.service';
 import { IApplicationsRepository } from './interfaces/applications.repository.interface';
 import { ICompaniesService } from '../companies/interfaces/companies.service.interface';
 import { IStorageService } from '../storage/interfaces/storage.service.interface';
-import { NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 
 describe('ApplicationsService', () => {
   let service: ApplicationsService;

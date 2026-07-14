@@ -37,19 +37,13 @@ describe('Jobs (e2e)', () => {
       const { accessToken } = getTokens(loginRes);
       await seedCompany(appInstance, accessToken);
 
-      const res = await authedReq(
-        appInstance,
-        'post',
-        '/jobs',
-        accessToken,
-        {
-          title: 'Software Engineer',
-          description: 'Test job',
-          location: 'Jakarta',
-          salaryMin: 5000000,
-          salaryMax: 10000000,
-        },
-      );
+      const res = await authedReq(appInstance, 'post', '/jobs', accessToken, {
+        title: 'Software Engineer',
+        description: 'Test job',
+        location: 'Jakarta',
+        salaryMin: 5000000,
+        salaryMax: 10000000,
+      });
 
       expect(res.status).toBe(201);
       expect(res.body.message).toBe('Job created successfully');
@@ -72,16 +66,10 @@ describe('Jobs (e2e)', () => {
 
       const { accessToken } = getTokens(loginRes);
 
-      const res = await authedReq(
-        appInstance,
-        'post',
-        '/jobs',
-        accessToken,
-        {
-          title: 'Should Fail',
-          description: 'Test',
-        },
-      );
+      const res = await authedReq(appInstance, 'post', '/jobs', accessToken, {
+        title: 'Should Fail',
+        description: 'Test',
+      });
 
       expect(res.status).toBe(403);
     });
