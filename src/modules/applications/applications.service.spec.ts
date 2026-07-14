@@ -97,7 +97,7 @@ describe('ApplicationsService', () => {
     it('should throw ConflictException when already applied (P2002)', async () => {
       mockRepository.getJobCompanyId.mockResolvedValue('10');
       mockRepository.create.mockRejectedValue(
-        Object.assign(new Error('Unique constraint failed'), {
+        Object.assign(new Error('P2002 Unique constraint failed'), {
           code: 'P2002',
         }),
       );
