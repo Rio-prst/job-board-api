@@ -6,6 +6,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   CreateBucketCommand,
+  HeadBucketCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -39,21 +40,24 @@ export class StorageService implements OnModuleInit {
   }
 
   private async ensureBucketExists(): Promise<void> {
-    await this.client
-      .send(new CreateBucketCommand({ Bucket: this.bucket }))
-      .catch((err) => {
-        const name = err instanceof Error ? err.name : '';
-        if (
-          name === 'BucketAlreadyOwnedByYou' ||
-          name === 'BucketAlreadyExists'
-        ) {
-          this.logger.log(
-            `Bucket "${this.bucket}" already exists, skipping creation`,
+    try {
+      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
+      this.logger.log(
+        `Bucket "${this.bucket}" already exists, skipping creation`,
+      );
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.name === 'NoSuchBucket' || err.message === 'NoSuchBucket') {
+          await this.client.send(
+            new CreateBucketCommand({ Bucket: this.bucket }),
           );
+          this.logger.log(`Bucket "${this.bucket}" created successfully`);
           return;
         }
-        throw err;
-      });
+      }
+
+      throw err;
+    }
   }
 
   async upload(key: string, body: Buffer, mimeType: string): Promise<void> {
