@@ -47,7 +47,19 @@ export class StorageService implements OnModuleInit {
       );
     } catch (err) {
       if (err instanceof Error) {
-        if (err.name === 'NoSuchBucket' || err.message === 'NoSuchBucket') {
+        const errorName = 'name' in err ? err.name : '';
+        const httpStatus =
+          err && typeof err === 'object' && '$metadata' in err
+            ? (err as { $metadata: { httpStatusCode?: number } }).$metadata
+                .httpStatusCode
+            : undefined;
+
+        if (
+          errorName === 'NoSuchBucket' ||
+          err.message === 'NoSuchBucket' ||
+          errorName === 'NotFound' ||
+          httpStatus === 404
+        ) {
           await this.client.send(
             new CreateBucketCommand({ Bucket: this.bucket }),
           );
