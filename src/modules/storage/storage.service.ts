@@ -60,10 +60,27 @@ export class StorageService implements OnModuleInit {
           errorName === 'NotFound' ||
           httpStatus === 404
         ) {
-          await this.client.send(
-            new CreateBucketCommand({ Bucket: this.bucket }),
-          );
-          this.logger.log(`Bucket "${this.bucket}" created successfully`);
+          try {
+            await this.client.send(
+              new CreateBucketCommand({ Bucket: this.bucket }),
+            );
+            this.logger.log(`Bucket "${this.bucket}" created successfully`);
+          } catch (createErr) {
+            if (createErr instanceof Error) {
+              const createErrName = 'name' in createErr ? createErr.name : '';
+
+              if (
+                createErrName === 'BucketAlreadyOwnedByYou' ||
+                createErrName === 'BucketAlreadyExists'
+              ) {
+                this.logger.log(
+                  `Bucket "${this.bucket}" was created concurrently by another process, skipping`,
+                );
+                return;
+              }
+            }
+            throw createErr;
+          }
           return;
         }
       }
